@@ -5,9 +5,9 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 
-dotenv.config();
 
 const app = express();
+dotenv.config();
 app.use(session({
     secret: "secret_key",
     resave: false, // it will stop resaving the session if it is not modified
@@ -23,10 +23,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //*-*-*-*- Configure google OAuth credential *-*-*-*
+console.log(process.env.GOOGLE_CLIENT_SECRET);
 passport.use(new GoogleStrategy({
-    client_Id: process.env.GOOGLE_CLIENT_ID,
-    client_Secret: process.env.GOOGLE_CLIENT_SECRET,
-    callback_Url: "http://localhost:3000/auth/google/callback" || process.env.GOOGLE_CALLBACK_URL,
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/callback",
 }, (accessToken, refreshToken, profile, done) => { // This function is called when the user is authenticated
     // The profile object contains the user information returned by Google
     console.log("User Profile: ", profile);
@@ -57,13 +58,18 @@ app.get("/profile", (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect("/");
     }
-    res.send(`<h1>Hello ${req.user.displayName}</h1>`);
+    res.send(`<h1>Hello ${req.user.displayName}</h1> <br> <a href='/logout'>Logout</a>`);
 })
-
-app.get('/logout', (req, res) => {
-    req.logOut();
-    res.redirect("/");
-})
+app.get("/logout", (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        req.session.destroy(() => {
+            res.redirect("/");
+        })
+    });
+});
 
 app.listen(3000, () => {
     console.log("Server is running on http://localhost:3000");

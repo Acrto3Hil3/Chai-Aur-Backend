@@ -66,6 +66,10 @@ app.get("/logout", (req, res) => {
             return next(err);
         }
         req.session.destroy(() => {
+            console.log("Session destroyed");
+            res.clearCookie("connect.sid");
+            console.log("Cookie cleared");
+            console.log("User logged out");
             res.redirect("/");
         })
     });

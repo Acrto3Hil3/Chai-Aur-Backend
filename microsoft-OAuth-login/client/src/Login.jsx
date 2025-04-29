@@ -2,6 +2,7 @@ import { signInWithPopup, getAuth } from "firebase/auth";
 import React from "react";
 import { auth, provider } from "./Firebase";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const login = () => {
   const navigate = useNavigate();
   const handleLogin = async () => {
@@ -15,13 +16,19 @@ const login = () => {
       phoneNumber: user.phoneNumber,
       avatar: user.photoURL,
     };
-
-    const response = await fetch("http://localhost:3001/api/auth/login", {
-      method: "post",
-      credentials: "include",
-      headers: { "Content-type": "application" },
-      body: JSON.stringify(userData),
-    });
+    const response = await axios.post(
+      "http://localhost:3001/api/auth/login",
+      {
+        name: userData.name,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        avatar: userData.avatar,
+      },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     const data = await response.json();
 

@@ -1,5 +1,5 @@
 import { signInWithPopup, getAuth } from "firebase/auth";
-import React from "react";
+
 import { auth, provider } from "./Firebase";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -30,11 +30,19 @@ const login = () => {
       }
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      alert(data.message);
+    const data = await response.data;
+    console.log(data);
+    if (data.success) {
+      alert("Login successfully");
+    } else {
+      alert("Login failed");
     }
+    const Ok = await axios.get("http://localhost:3001/api/auth/get-user", {
+      withCredentials: true,
+    });
+    console.log(Ok.data);
+    console.log(Ok);
+
     navigate("/dashboard");
   };
   return (

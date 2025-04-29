@@ -11,7 +11,7 @@ export const User = sequelize.define('User', {
         unique: true,
     },
     phoneNumber: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.STRING,
     },
     avatar: {
         type: DataTypes.TEXT

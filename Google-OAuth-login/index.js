@@ -27,7 +27,7 @@ console.log(process.env.GOOGLE_CLIENT_SECRET);
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback",
+    callbackURL: "http://localhost:3000/api/auth/google/callback",
 }, (accessToken, refreshToken, profile, done) => { // This function is called when the user is authenticated
     // The profile object contains the user information returned by Google
     console.log("User Profile: ", profile);
@@ -39,18 +39,29 @@ passport.use(new GoogleStrategy({
 
 //*-*-*-*- Serialize(saving the user data inside the session) and deserialize user(retriving the data from session) *-*-*-*
 
-passport.serializeUser((user, done) => done(null, user)); // it will save the user information in the session
+passport.serializeUser((user, done) => {
+    console.log("User serialized: ", user);
+    done(null, user);
+}) // it will save the user information in the session
 passport.deserializeUser((user, done) => done(null, user)); // it will retrieve the user information from the session
 
 //*-*-*-*- Define the routes *-*-*-*
 app.get("/", (req, res) => {
-    res.send("<a href='/auth/google'>Login with Google</a>");
+    res.send("<a href='/api/auth/google'>Login with Google</a>");
 })
 
-app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] })
-); // it will redirect the user to the google login page
+// app.get("/api/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }))
 
-app.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => {
+app.get("/api/auth/google", (req, res) => {
+
+    const redirectUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&scope=profile email&state=${req.query.source || "default"}`;
+    res.json({ redirectUrl });
+});
+
+; // it will redirect the user to the google login page
+
+app.get("/api/auth/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => {
+    console.log("User authenticated successfully");
     res.redirect("/profile");
 })
 

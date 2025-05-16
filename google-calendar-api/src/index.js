@@ -74,6 +74,7 @@ app.get("/schedule_event", async (req, res) => {
           requestId: "7qx8j0",
         },
       },
+
       attendees: [
         {
           email: "subhashyadav.equasar@gmail.com",

@@ -3,17 +3,21 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { sequelize } from './config/dbConnect.js';
 import { authRouter } from './router/auth.routes.js';
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 
 const PORT = process.env.SERVER_PORT
 
 const app = express()
+app.use(cookieParser())
 app.use(express.json())
-app.use(cors({
-    origin: 'http://localhost:5173',
+app.use(cors({    //allow the frontend to access the backend
+    origin: true,
     credentials: true
 }))
+
+//define the routes
 app.use('/api/auth', authRouter)
 
 

@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 import { sequelize } from '../config/dbConnect.js'
 
-export const User = sequelize.define('User', {
+export const User = sequelize.define('Google-User', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,

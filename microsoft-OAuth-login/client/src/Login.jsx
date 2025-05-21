@@ -1,7 +1,8 @@
 import { signInWithPopup, getAuth } from "firebase/auth";
-import React from "react";
+
 import { auth, provider } from "./Firebase";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const login = () => {
   const navigate = useNavigate();
   const handleLogin = async () => {
@@ -15,19 +16,33 @@ const login = () => {
       phoneNumber: user.phoneNumber,
       avatar: user.photoURL,
     };
+    const response = await axios.post(
+      "http://localhost:3001/api/auth/login",
+      {
+        name: userData.name,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        avatar: userData.avatar,
+      },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
-    const response = await fetch("http://localhost:3001/api/auth/login", {
-      method: "post",
-      credentials: "include",
-      headers: { "Content-type": "application" },
-      body: JSON.stringify(userData),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      alert(data.message);
+    const data = await response.data;
+    console.log(data);
+    if (data.success) {
+      alert("Login successfully");
+    } else {
+      alert("Login failed");
     }
+    const Ok = await axios.get("http://localhost:3001/api/auth/get-user", {
+      withCredentials: true,
+    });
+    console.log(Ok.data);
+    console.log(Ok);
+
     navigate("/dashboard");
   };
   return (
